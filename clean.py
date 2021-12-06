@@ -4,6 +4,10 @@ import numpy as np
 import re
 import nltk
 from nltk.tokenize import TweetTokenizer
+from nltk.corpus import stopwords
+nltk.download('stopwords')
+from nltk.tokenize import word_tokenize
+import string 
 
 emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
@@ -71,14 +75,18 @@ def create_base(string):
 
 tweets['base_text'] = tweets['text'].apply(create_base)
 
-# create tokens column by tokenizing base text, lower case (tweet sensitive)
+# create tokens column by tokenizing base text, lower case (tweet sensitive), remove stop words and punctuation
 
 tk = TweetTokenizer()
+stopword_set = set(stopwords.words('english'))
+punctuation_set = set(string.punctuation)
 
 def token_tweet(string):
     lower_string = string.lower()
     token_string = tk.tokenize(lower_string)
-    return token_string
+    token_string_without_sw = [word for word in token_string if not word in stopword_set]
+    token_string_without_punc = [word for word in token_string_without_sw if not word in punctuation_set]
+    return token_string_without_punc
 
 tweets['token_tweet'] = tweets['base_text'].apply(token_tweet)
 
