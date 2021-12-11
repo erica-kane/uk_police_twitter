@@ -90,3 +90,5 @@ def token_tweet(string):
 
 tweets['token_tweet'] = tweets['base_text'].apply(token_tweet)
 
+tweets.to_csv('cleantweet.csv')
+
