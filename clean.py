@@ -93,5 +93,7 @@ tweets['token_tweet'] = tweets['base_text'].apply(token_tweet)
 nort = tweets[tweets.tweet_type != 'retweet'].reset_index(drop=True)
 
 nort.to_csv('cleantweet.csv')
-nort.to_excel('cleantweet.xlsx')
+
+sampletweet = nort.sample(n=100)
+sampletweet.to_csv('sampletweet.csv')
 
