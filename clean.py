@@ -94,6 +94,7 @@ nort = tweets[tweets.tweet_type != 'retweet'].reset_index(drop=True)
 
 nort.to_csv('cleantweet.csv')
 
-sampletweet = nort.sample(n=100)
-sampletweet.to_csv('sampletweet.csv')
+#sampletweet = nort.sample(n=100)
+#sampletweet.to_csv('sampletweet.csv')
+
 
