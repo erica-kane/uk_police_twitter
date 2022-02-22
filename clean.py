@@ -110,14 +110,22 @@ nort.head()
 # Deal with duplicate tweets 
 
 # How many unique values are there 
-# This tells us how many tweets are exact duplicates 
-nort['base_text'].nunique()
+# This tells us how many tweets are and aren't exact duplicates 
 nort['base_text'].duplicated().value_counts()
 
-dupe_tweets = nort[nort['base_text'].duplicated()]
-dupe_tweets.to_csv('dupetweet.csv')
+# Before classifying these duplicates it is useful to see how many times 
+# they are duplicated 
+# This line tells us how many times each tweet is tweeted and saves it as a dataframe
+duplicates = pd.DataFrame(nort['base_text'].value_counts())
+# This line tells us how many times each number of duplications occurs 
+# e.g. 563 tweets are duplicated once (i.e. exist twice)
+duplicates[duplicates['base_text']>1].value_counts()
 
-# Visualise 
+# Create a new dataset of just duplicated tweets 
+dupe_tweets = nort[nort['base_text'].duplicated()]
+
+
+# Visualise these duplicated tweets 
 vectorizer = TfidfVectorizer()
 tfidf = vectorizer.fit_transform(dupe_tweets["base_text"])
 
@@ -139,10 +147,14 @@ fig.circle("x", "y", source=datasource, fill_color=colours, line_color=colours, 
 show(fig)
 
 
+# Save duplicated tweets as csv so you can hand code large chunks 
+single_dupe_tweets = pd.DataFrame(dupe_tweets['base_text'].unique())
+single_dupe_tweets['tweet_class'] = 0
+single_dupe_tweets = single_dupe_tweets.rename(columns={0: "base_text"})
+single_dupe_tweets.to_csv('dupetweet.csv')
 
-# Look at how many times tweets are duplicated per duplicated amount 
-duplicates = pd.DataFrame(nort['base_text'].value_counts())
-pd.DataFrame(duplicates[duplicates['base_text']>1]).value_counts()
+# Read data back in and match classification up to original data 
+
 
 
 
