@@ -8,6 +8,15 @@ from nltk.corpus import stopwords
 nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
 import string 
+import spacy
+from sklearn.feature_extraction.text import TfidfVectorizer
+import umap
+
+from bokeh.plotting import figure, show, output_notebook
+from bokeh.models import ColumnDataSource
+from bokeh.transform import factor_cmap
+from bokeh.palettes import Spectral6
+output_notebook()
 
 emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
@@ -94,7 +103,48 @@ nort = tweets[tweets.tweet_type != 'retweet'].reset_index(drop=True)
 
 nort.dropna(subset=["base_text"], inplace=True)
 
-nort.to_csv('cleantweet.csv')
+#nort.to_csv('cleantweet.csv')
+
+nort.head()
+
+# Deal with duplicate tweets 
+
+# How many unique values are there 
+# This tells us how many tweets are exact duplicates 
+nort['base_text'].nunique()
+nort['base_text'].duplicated().value_counts()
+
+dupe_tweets = nort[nort['base_text'].duplicated()]
+dupe_tweets.to_csv('dupetweet.csv')
+
+# Visualise 
+vectorizer = TfidfVectorizer()
+tfidf = vectorizer.fit_transform(dupe_tweets["base_text"])
+
+reducer = umap.UMAP(n_components=2, metric="hellinger")
+embeddings = reducer.fit_transform(tfidf)
+embeddings.shape
+
+datasource = ColumnDataSource({
+    "x": embeddings[:, 0],
+    "y": embeddings[:, 1],
+    'text': dupe_tweets["base_text"],
+    "force": dupe_tweets['police_force']
+})
+
+colours = factor_cmap('force', palette=Spectral6, factors=dupe_tweets['police_force'].unique()) 
+
+fig = figure(tooltips = [('Tweet', '@text')])
+fig.circle("x", "y", source=datasource, fill_color=colours, line_color=colours, legend_group="force")
+show(fig)
+
+
+
+# Look at how many times tweets are duplicated per duplicated amount 
+duplicates = pd.DataFrame(nort['base_text'].value_counts())
+pd.DataFrame(duplicates[duplicates['base_text']>1]).value_counts()
+
+
 
 #sampletweet = nort.sample(n=100)
 #sampletweet.to_csv('sampletweet.csv')
