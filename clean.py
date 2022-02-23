@@ -19,12 +19,12 @@ from bokeh.palettes import Spectral6
 output_notebook()
 
 emoji_pattern = re.compile("["
-        u"\U0001F600-\U0001F64F"  # emoticons
-        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-        u"\U0001F680-\U0001F6FF"  # transport & map symbols
-        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-        u"\U0001F1F2-\U0001F1F4"  # Macau flag
-        u"\U0001F1E6-\U0001F1FF"  # flags
+        u"\U0001F600-\U0001F64F"  
+        u"\U0001F300-\U0001F5FF"  
+        u"\U0001F680-\U0001F6FF"  
+        u"\U0001F1E0-\U0001F1FF"  
+        u"\U0001F1F2-\U0001F1F4"  
+        u"\U0001F1E6-\U0001F1FF"  
         u"\U0001F600-\U0001F64F"
         u"\U00002702-\U000027B0"
         u"\U000024C2-\U0001F251"
@@ -155,7 +155,18 @@ single_dupe_tweets.to_csv('dupetweet.csv')
 
 # Read data back in and match classification up to original data 
 
+dupe_tweets_class = pd.read_csv('dupetweet_withclass.csv')
+dupe_tweets_class = dupe_tweets_class.drop(['Unnamed: 0'], axis=1)
 
+# Check for inconsistencies in how they have been read back in 
+dupe_tweets_class['base_text'][1]
+nort['base_text'][147]
+# Reading back in has removed leading white spaces - you can remove these 
+nort['base_text'][147].lstrip() == dupe_tweets_class['base_text'][1].lstrip()
+
+# When joining back together, to check it has matched successfully check the amount of tweets 
+# with a value other than 0 as their class matches the amount of duplicated tweets 
+# Should be 5750
 
 
 #sampletweet = nort.sample(n=100)
