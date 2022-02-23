@@ -76,11 +76,11 @@ def create_base(string):
         no_rt = string[3:]
         no_emoji = emoji_pattern.sub(r'', no_rt)
         no_url = re.sub(r'http\S+', '', no_emoji)
-        return no_url
+        return no_url.strip()
     else:
         no_emoji = emoji_pattern.sub(r'', string)
         no_url = re.sub(r'http\S+', '', no_emoji)
-        return no_url
+        return no_url.strip()
 
 tweets['base_text'] = tweets['text'].apply(create_base)
 
@@ -123,6 +123,40 @@ duplicates[duplicates['base_text']>1].value_counts()
 
 # Create a new dataset of just duplicated tweets 
 dupe_tweets = nort[nort['base_text'].duplicated()]
+dupe_tweets['tweet_class'] = 0
+
+# Save duplicated tweets as csv so you can hand code large chunks 
+single_dupe_tweets = pd.DataFrame(dupe_tweets['base_text'].unique())
+single_dupe_tweets['tweet_class'] = 0
+single_dupe_tweets = single_dupe_tweets.rename(columns={0: "base_text"})
+single_dupe_tweets.to_csv('dupetweet.csv')
+
+# Data has been manually edited outside of python and classes added
+
+# Read data back in and match classification up to original data 
+dupe_tweets_class = pd.read_csv('dupetweet_withclass.csv')
+dupe_tweets_class = dupe_tweets_class.drop(['Unnamed: 0'], axis=1)
+# Strip white space before and after a string 
+def strip_tweet(value):
+    return str(value).strip()
+dupe_tweets_class['base_text'] = dupe_tweets_class['base_text'].apply(strip_tweet)
+
+# Check for inconsistencies in how they have been read back in 
+nort['base_text'][147] == dupe_tweets_class['base_text'][1]
+dupe_tweets_class['tweet_class'].value_counts()
+
+# When joining back together, to check it has matched successfully check the amount of tweets 
+# with a value other than 0 as their class matches the amount of duplicated tweets 
+# Should be 5891
+for value in nort['base_text']:
+    for tweet in dupe_tweets_class['base_text']:
+        if value == tweet:
+            nort['tweet_class'] = dupe_tweets_class['tweet_class']
+
+nort['tweet_class'] = nort['tweet_class'].fillna(0)
+
+(nort['tweet_class'] != 0).value_counts()
+
 
 
 # Visualise these duplicated tweets 
@@ -145,31 +179,3 @@ colours = factor_cmap('force', palette=Spectral6, factors=dupe_tweets['police_fo
 fig = figure(tooltips = [('Tweet', '@text')])
 fig.circle("x", "y", source=datasource, fill_color=colours, line_color=colours, legend_group="force")
 show(fig)
-
-
-# Save duplicated tweets as csv so you can hand code large chunks 
-single_dupe_tweets = pd.DataFrame(dupe_tweets['base_text'].unique())
-single_dupe_tweets['tweet_class'] = 0
-single_dupe_tweets = single_dupe_tweets.rename(columns={0: "base_text"})
-single_dupe_tweets.to_csv('dupetweet.csv')
-
-# Read data back in and match classification up to original data 
-
-dupe_tweets_class = pd.read_csv('dupetweet_withclass.csv')
-dupe_tweets_class = dupe_tweets_class.drop(['Unnamed: 0'], axis=1)
-
-# Check for inconsistencies in how they have been read back in 
-dupe_tweets_class['base_text'][1]
-nort['base_text'][147]
-# Reading back in has removed leading white spaces - you can remove these 
-nort['base_text'][147].lstrip() == dupe_tweets_class['base_text'][1].lstrip()
-
-# When joining back together, to check it has matched successfully check the amount of tweets 
-# with a value other than 0 as their class matches the amount of duplicated tweets 
-# Should be 5750
-
-
-#sampletweet = nort.sample(n=100)
-#sampletweet.to_csv('sampletweet.csv')
-
-
