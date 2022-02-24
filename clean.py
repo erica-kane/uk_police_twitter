@@ -125,7 +125,7 @@ final_dupes['tweet_class'].value_counts()
 # When joining back together, to check it has matched successfully check the amount of tweets 
 # with a value other than 0 as their class matches the amount of duplicated tweets 
 # Should be 5895
-tweets['tweet_class'] = 0
+tweets.merge(final_dupes, left_on='base_text', right_on='base_text', how='left')
 
 
 
