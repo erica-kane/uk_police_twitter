@@ -3,6 +3,7 @@ import pyreadr
 import numpy as np
 import re
 import nltk
+import demoji
 from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
 nltk.download('stopwords')
@@ -11,7 +12,6 @@ import string
 import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 import umap
-import demoji
 
 all_tweets = pd.read_csv('tweets.csv')
 all_tweets.head()
@@ -181,9 +181,12 @@ def drop_mention(base_text):
         return True
 
 cls_twt = cls_twt[cls_twt["base_text"].apply(drop_mention)]
+cls_twt['tweet_class'] = cls_twt['tweet_class'].fillna(0)
+
+# Save data to trial naive bayes model 
+#cls_twt.to_csv('practice_tweets.csv')
 
 # See how many tweets are from each force in non-labelled tweets 
-cls_twt['tweet_class'] = cls_twt['tweet_class'].fillna(0)
 ((cls_twt[cls_twt['tweet_class'] == 0.0])['police_force'].value_counts(normalize=True)*100).round()
 # you want 1/4 of the unlabelled tweets to label, which is 25% of 34044
 (34044/100)*25
@@ -204,6 +207,7 @@ met = no_cls[no_cls['police_force']== 'MET'].sample(n=1702, random_state=1)
 wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1533, random_state=1)
 
 unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
+unlabeled.reset_index(level=0, inplace=True)
 
 ## Bokeh plot code
 
