@@ -119,14 +119,45 @@ final_dupes['base_text'] = final_dupes['base_text'].apply(strip_tweet)
 
 # Check for inconsistencies in how they have been read back in 
 tweets['base_text'][147] == final_dupes['base_text'][1]
-final_dupes['tweet_class'] = final_dupes['tweet_class'].replace(0, 1)
 final_dupes['tweet_class'].value_counts()
 
 # When joining back together, to check it has matched successfully check the amount of tweets 
 # with a value other than 0 as their class matches the amount of duplicated tweets 
-# Should be 5895
-tweets.merge(final_dupes, left_on='base_text', right_on='base_text', how='left')
+# Should be 7253
+cls_twt = tweets.merge(final_dupes, left_on='base_text', right_on='base_text', how='left')
+(cls_twt['tweet_class'].fillna(0)).value_counts()
+# It doesn't add to 7253, adds to 7188. Check below by making new dataset with only values not 
+# equal to 0 
+cls_twt_dupe = (cls_twt[(cls_twt['tweet_class'].fillna(0))!= 0])
+len(cls_twt_dupe)
+# Values which are duplicated are more than values equal to 0 
+# Duplicted tweets in the original data match duplicated in the new data, but 
+# tweets with class != 0 do not equate to that amount
+len(tweets['base_text'][tweets['base_text'].duplicated(keep=False)])
+len(cls_twt['base_text'][cls_twt['base_text'].duplicated(keep=False)])
+len(cls_twt_dupe)
+# Look at these tweets which are duplicated but do not have classes
+# Make data frame of the base text of all tweets which are class not 0 from their
+cls_twt_dupe1 = pd.DataFrame(cls_twt_dupe['base_text'])
+# Make data frame of the base text of all tweets which are duplicated 
+cls_twt_dupe2 = pd.DataFrame(cls_twt['base_text'][cls_twt['base_text'].duplicated(keep=False)])
+# reset index so the index value is it's own column
+cls_twt_dupe1.reset_index(level=0, inplace=True)
+cls_twt_dupe2.reset_index(level=0, inplace=True)
+# Save differences in indexes to a new list object
+indexes = list(set(cls_twt_dupe2['index'].tolist()) - set(cls_twt_dupe1['index'].tolist()))
+# Use list object to index on data and look at the tweets which are duplicated but don't have a class
+hell_twts = (cls_twt.loc[indexes, ['base_text']])
+# How many of these tweets are unique?
+len(hell_twts['base_text'].unique())
 
+
+
+
+
+cls_twt_set = set(cls_twt["base_text"])
+cls_twt_dupe_set = set(cls_twt_dupe["base_text"])
+len(cls_twt_ - cls_twt_dupe_set)
 
 
 
