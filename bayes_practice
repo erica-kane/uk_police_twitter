@@ -1,0 +1,9 @@
+import pandas as pd
+import pyreadr
+import numpy as np
+import re
+import nltk
+import string 
+import spacy
+
+all_tweets = pd.read_csv('practice_tweets.csv')
