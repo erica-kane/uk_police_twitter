@@ -126,6 +126,7 @@ final_dupes['tweet_class'].value_counts()
 # Should be 7253
 cls_twt = tweets.merge(final_dupes, left_on='base_text', right_on='base_text', how='left')
 (cls_twt['tweet_class'].fillna(0)).value_counts()
+
 # It doesn't add to 7253, adds to 7188. Check below by making new dataset with only values not 
 # equal to 0 
 cls_twt_dupe = (cls_twt[(cls_twt['tweet_class'].fillna(0))!= 0])
@@ -151,18 +152,35 @@ hell_twts = (cls_twt.loc[indexes, ['base_text']])
 # How many of these tweets are unique?
 len(hell_twts['base_text'].unique())
 
+# Code the duplicate tweets that don't have a class
+# Change blanks to 100
+for value in indexes:
+    if cls_twt['base_text'][value] == '':
+        cls_twt['tweet_class'][value] = 100
 
+for value in indexes:
+    if cls_twt['base_text'][value] == 'Three simple actions we must all do to keep on protecting each other \n￼\n Keep washing your hands regularly\n￼\n Wear a face covering in enclosed spaces\n￼\n Stay at least 2 metres apart\n\nKeep up to date with the guidance:' or cls_twt['base_text'][value] == 'There are simple but effective ways in which we can all help prevent the spread of coronavirus:\n￼Wash your hands\nWear a face covering\n￼Make space\nMore info here: \n#HandsFaceSpace #SafeGM' or cls_twt['base_text'][value] == 'There are simple but effective ways we can all help prevent the spread of coronavirus:\n\n Wash your hands\n￼\n Wear a face covering\n￼\n Make space\n\nMore info here: \n\n#HandsFaceSpace #SafeGM' or cls_twt['base_text'][value] == 'There are simple but effective ways in which we can all help prevent the spread of coronavirus:\n￼Wash your hands\n￼Wear a face covering\n￼Make space\nMore info here: \n#HandsFaceSpace #SafeGM':
+        cls_twt['tweet_class'][value] = 1.0
+    
+cls_twt['tweet_class'].value_counts(dropna=False)
+# Now it adds to 7253
 
+# Drop any row with empty string in base text 
+cls_twt = cls_twt[cls_twt.base_text != '']
+cls_twt = cls_twt[cls_twt.tweet_class != 100.0]
 
+# Drop any rows in which base_text is just words with @ at the start 
+def drop_mention(base_text):
+    word_list = []
+    for word in base_text.split():
+        if not word.startswith('@'):
+            word_list.append(word)
+    if not word_list:
+        return False
+    else:
+        return True
 
-cls_twt_set = set(cls_twt["base_text"])
-cls_twt_dupe_set = set(cls_twt_dupe["base_text"])
-len(cls_twt_ - cls_twt_dupe_set)
-
-
-
-
-
+cls_twt = cls_twt[cls_twt["base_text"].apply(drop_mention)]
 
 
 
