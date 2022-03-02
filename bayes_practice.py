@@ -10,6 +10,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import confusion_matrix, accuracy_score
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Read the data 
 all_tweets = pd.read_csv('practice_tweets.csv')
@@ -31,6 +34,22 @@ y_test = test['tweet_class']
 model = make_pipeline(TfidfVectorizer(), MultinomialNB())
 model.fit(x_train, y_train)
 predicted_categories = model.predict(x_test)
+
+accuracy_score(y_test, predicted_categories)
+
+class_names = ['Providing information','Engagement', 'Intelligence gathering']
+
+mat = confusion_matrix(y_test, predicted_categories)
+sns.heatmap(mat.T, square = True, annot=True, fmt = "d", xticklabels = class_names, yticklabels = class_names)
+plt.xlabel("true labels")
+plt.ylabel("predicted label")
+plt.show()
+
+test_with_base = test[['base_text','tweet_class']]
+test_with_base['pred_class'] = predicted_categories
+test_with_base[test_with_base['pred_class']!= test_with_base['tweet_class']]
+
+
 
 
 
