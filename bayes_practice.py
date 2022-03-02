@@ -7,6 +7,9 @@ import string
 import spacy
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.pipeline import make_pipeline
+from sklearn.naive_bayes import MultinomialNB
 
 # Read the data 
 all_tweets = pd.read_csv('practice_tweets.csv')
@@ -19,10 +22,17 @@ train, test = train_test_split(tweets_with_labels)
 # Create x and y 
 # x is the features and y is the labels
 # You need both features and labels for the training and testing to be separate 
-x_train = pd.DataFrame(train['base_text'])
-x_test = pd.DataFrame(test['base_text'])
-y_train = pd.DataFrame(train['tweet_class'])
-y_test = pd.DataFrame(test['tweet_class'])
+x_train = train['base_text']
+x_test = test['base_text']
+y_train = train['tweet_class']
+y_test = test['tweet_class']
+
+
+model = make_pipeline(TfidfVectorizer(), MultinomialNB())
+model.fit(x_train, y_train)
+predicted_categories = model.predict(x_test)
+
+
 
 
 
