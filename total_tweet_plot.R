@@ -3,13 +3,13 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 library(lubridate)
-cleantweets = read_csv('cleantweet.csv')
+plot_tweets = read_csv('plot_tweets.csv')
 
-cleantweets = select(cleantweets, -'X1')
+plot_tweets = select(plot_tweets, -'X1')
 
-cleantweets$date = as.Date(cleantweets$date)
+plot_tweets$date = as.Date(plot_tweets$date)
 
-cleantweets %>%
+plot_tweets %>%
   mutate(week=floor_date(date, unit="week")) %>%
   group_by(week, police_force) %>%
   summarise(Count = n()) %>%
@@ -20,7 +20,7 @@ cleantweets %>%
   geom_vline(xintercept=as.numeric(as.Date('2020-05-25'))) +
   theme_minimal() 
 
-cleantweets %>%
+plot_tweets %>%
   mutate(week=floor_date(date, unit="week")) %>%
   group_by(week, police_force) %>%
   summarise(Count = n()) %>%
@@ -33,7 +33,7 @@ cleantweets %>%
   labs(x = 'Date', y = 'Tweet count (aggregated by week)', title = 'Police force tweet frequency', color = 'Police force') +
   theme_minimal() 
 
-cleantweets %>%
+plot_tweets %>%
   mutate(week=floor_date(date, unit="week")) %>%
   group_by(week, police_force) %>%
   summarise(Count = n()) %>%
