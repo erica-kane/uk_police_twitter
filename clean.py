@@ -13,7 +13,7 @@ import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 import umap
 
-all_tweets = pd.read_csv('tweets.csv')
+all_tweets = pd.read_csv('tweets1.csv')
 all_tweets.head()
 
 # Author IDs are 21857067 = GMP, 66967746 = MET, 23418457 = ASPolice
@@ -80,7 +80,7 @@ tweets = all_tweets[all_tweets.tweet_type != 'retweet'].reset_index(drop=True)
 
 tweets.dropna(subset=["base_text"], inplace=True)
 
-#tweets.to_csv('cleantweet.csv')
+#tweets.to_csv('plot_tweets.csv')
 
 tweets.head()
 
