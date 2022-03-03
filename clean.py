@@ -209,32 +209,3 @@ wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1589, ra
 unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
 unlabeled.reset_index(level=0, inplace=True)
 
-## Bokeh plot code
-
-
-#from bokeh.plotting import figure, show, output_notebook
-#from bokeh.transform import factor_cmap
-#from bokeh.models import ColumnDataSource
-#from bokeh.palettes import Spectral6
-#output_notebook()
-
-## Visualise these duplicated tweets 
-#vectorizer = TfidfVectorizer()
-#tfidf = vectorizer.fit_transform(dupe_tweets["base_text"])
-
-#reducer = umap.UMAP(n_components=2, metric="hellinger")
-#embeddings = reducer.fit_transform(tfidf)
-#embeddings.shape
-
-#datasource = ColumnDataSource({
-    #"x": embeddings[:, 0],
-    #"y": embeddings[:, 1],
-    #'text': dupe_tweets["base_text"],
-    #"force": dupe_tweets['police_force']
-#})
-
-#colours = factor_cmap('force', palette=Spectral6, factors=dupe_tweets['police_force'].unique()) 
-
-#fig = figure(tooltips = [('Tweet', '@text')])
-#fig.circle("x", "y", source=datasource, fill_color=colours, line_color=colours, legend_group="force")
-#show(fig)
