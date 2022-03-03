@@ -110,7 +110,7 @@ unique_dupes.to_csv('dupetweet.csv')
 # Data has been manually edited outside of python and classes added
 
 # Read data back in and match classification up to original data 
-final_dupes = pd.read_csv('dupetweet_withclass.csv')
+final_dupes = pd.read_csv('dupetweet_withclass1.csv')
 final_dupes = final_dupes.drop(['Unnamed: 0'], axis=1)
 # Strip white space before and after a string 
 def strip_tweet(value):
@@ -118,16 +118,16 @@ def strip_tweet(value):
 final_dupes['base_text'] = final_dupes['base_text'].apply(strip_tweet)
 
 # Check for inconsistencies in how they have been read back in 
-tweets['base_text'][147] == final_dupes['base_text'][1]
+tweets['base_text'][91] == final_dupes['base_text'][1]
 final_dupes['tweet_class'].value_counts()
 
 # When joining back together, to check it has matched successfully check the amount of tweets 
 # with a value other than 0 as their class matches the amount of duplicated tweets 
-# Should be 7253
+# Should be 7548
 cls_twt = tweets.merge(final_dupes, left_on='base_text', right_on='base_text', how='left')
 (cls_twt['tweet_class'].fillna(0)).value_counts()
 
-# It doesn't add to 7253, adds to 7188. Check below by making new dataset with only values not 
+# It doesn't add to 7548, adds to 7438. Check below by making new dataset with only values not 
 # equal to 0 
 cls_twt_dupe = (cls_twt[(cls_twt['tweet_class'].fillna(0))!= 0])
 len(cls_twt_dupe)
@@ -163,7 +163,7 @@ for value in indexes:
         cls_twt['tweet_class'][value] = 1.0
     
 cls_twt['tweet_class'].value_counts(dropna=False)
-# Now it adds to 7253
+# Now it adds to 7548
 
 # Drop any row with empty string in base text 
 cls_twt = cls_twt[cls_twt.base_text != '']
@@ -187,24 +187,24 @@ cls_twt['tweet_class'] = cls_twt['tweet_class'].fillna(0)
 #cls_twt.to_csv('practice_tweets.csv')
 
 # See how many tweets are from each force in non-labelled tweets 
-((cls_twt[cls_twt['tweet_class'] == 0.0])['police_force'].value_counts(normalize=True)*100).round()
-# you want 1/4 of the unlabelled tweets to label, which is 25% of 34044
-(34044/100)*25
-# 8511 tweets to label of which 
-# 21% West Midlands Police - 1787
-# 21% GMP - 1787
-# 20% Avon and Somerset Police - 1702
-# 20% MET - 1702 
-# 18% West Yorkshire Police - 1533
+((cls_twt[cls_twt['tweet_class'] == 0.0])['police_force'].value_counts(normalize=True)*100).round(2)
+# you want 1/4 of the unlabelled tweets to label, which is 25% of 35709
+(35709/100)*25
+# 8829 tweets to label of which 
+# 22% West Midlands Police - 1942
+# 21% GMP - 1854
+# 20% Avon and Somerset Police - 1766
+# 19% MET - 1678
+# 18% West Yorkshire Police - 1589
 
 # Create the data set 
 no_cls = cls_twt[cls_twt['tweet_class'] == 0.0]
 
-wmp = no_cls[no_cls['police_force']== 'West Midlands Police'].sample(n=1787, random_state=1)
-gmp = no_cls[no_cls['police_force']== 'GMP'].sample(n=1787, random_state=1)
-asp = no_cls[no_cls['police_force']== 'Avon and Somerset Police'].sample(n=1702, random_state=1)
-met = no_cls[no_cls['police_force']== 'MET'].sample(n=1702, random_state=1)
-wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1533, random_state=1)
+wmp = no_cls[no_cls['police_force']== 'West Midlands Police'].sample(n=1942, random_state=1)
+gmp = no_cls[no_cls['police_force']== 'GMP'].sample(n=1854, random_state=1)
+asp = no_cls[no_cls['police_force']== 'Avon and Somerset Police'].sample(n=1766, random_state=1)
+met = no_cls[no_cls['police_force']== 'MET'].sample(n=1678, random_state=1)
+wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1589, random_state=1)
 
 unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
 unlabeled.reset_index(level=0, inplace=True)
