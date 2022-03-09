@@ -13,7 +13,7 @@ import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 import umap
 
-all_tweets = pd.read_csv('tweets1.csv')
+all_tweets = pd.read_csv('tweets.csv')
 all_tweets.head()
 
 # Author IDs are 21857067 = GMP, 66967746 = MET, 23418457 = ASPolice
@@ -110,7 +110,7 @@ unique_dupes.to_csv('dupetweet.csv')
 # Data has been manually edited outside of python and classes added
 
 # Read data back in and match classification up to original data 
-final_dupes = pd.read_csv('dupetweet_withclass1.csv')
+final_dupes = pd.read_csv('dupetweet_withclass.csv')
 final_dupes = final_dupes.drop(['Unnamed: 0'], axis=1)
 # Strip white space before and after a string 
 def strip_tweet(value):
