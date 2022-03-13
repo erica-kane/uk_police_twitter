@@ -190,22 +190,32 @@ cls_twt['tweet_class'] = cls_twt['tweet_class'].fillna(0)
 ((cls_twt[cls_twt['tweet_class'] == 0.0])['police_force'].value_counts(normalize=True)*100).round(2)
 # you want 1/4 of the unlabelled tweets to label, which is 25% of 35709
 (35709/100)*25
-# 8829 tweets to label of which 
-# 22% West Midlands Police - 1942
-# 21% GMP - 1854
-# 20% Avon and Somerset Police - 1766
-# 19% MET - 1678
-# 18% West Yorkshire Police - 1589
+# 8927 tweets to label of which 
+# 22% West Midlands Police - 1964
+# 21% GMP - 1875
+# 20% Avon and Somerset Police - 1785
+# 19% MET - 1696
+# 18% West Yorkshire Police - 1607
 
 # Create the data set 
 no_cls = cls_twt[cls_twt['tweet_class'] == 0.0]
 
-wmp = no_cls[no_cls['police_force']== 'West Midlands Police'].sample(n=1942, random_state=1)
-gmp = no_cls[no_cls['police_force']== 'GMP'].sample(n=1854, random_state=1)
-asp = no_cls[no_cls['police_force']== 'Avon and Somerset Police'].sample(n=1766, random_state=1)
-met = no_cls[no_cls['police_force']== 'MET'].sample(n=1678, random_state=1)
-wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1589, random_state=1)
+wmp = no_cls[no_cls['police_force']== 'West Midlands Police'].sample(n=1964, random_state=1)
+gmp = no_cls[no_cls['police_force']== 'GMP'].sample(n=1875, random_state=1)
+asp = no_cls[no_cls['police_force']== 'Avon and Somerset Police'].sample(n=1785, random_state=1)
+met = no_cls[no_cls['police_force']== 'MET'].sample(n=1696, random_state=1)
+wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1607, random_state=1)
 
 unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
-unlabeled.reset_index(level=0, inplace=True)
 
+unlabeled[['base_text', 'tweet_class']].to_csv('unlabeled_training.csv')
+
+
+# cls_twt is full data with duplicates labelled 
+# no_cls is just non duplicate tweets (i.e. those without classes)
+# Unlabelled is a sample of the non duplicate tweets to be hand classified
+# after you label you can read back in labeled, this is test/training set
+# Then index no_cls on the labelled tweets and save everything that's ublabeled 
+# These 2 new data sets should add to 35709
+
+# Once the data is all classfied it can be joined back with the duplicate tweets 
