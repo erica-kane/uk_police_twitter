@@ -210,6 +210,8 @@ unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
 
 unlabeled[['base_text', 'tweet_class']].to_csv('unlabeled_training.csv')
 
+# Example of how git works 
+
 
 # cls_twt is full data with duplicates labelled 
 # no_cls is just non duplicate tweets (i.e. those without classes)
