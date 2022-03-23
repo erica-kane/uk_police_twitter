@@ -219,9 +219,6 @@ unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
 # These 2 new data sets should add to 35709
 
 # Once the data is all classfied it can be joined back with the duplicate tweets 
-test_train = pd.read_csv('unlabeled_training.csv')
-test_train['tweet_class'].value_counts()
-
 cls_twt['tweet_form'] = 0
 for value in cls_twt.index.to_list():
     if cls_twt['tweet_class'][value] != 0:
@@ -230,5 +227,23 @@ for value in cls_twt.index.to_list():
 for value in cls_twt.index.to_list():
     if cls_twt['tweet_class'][value] == 0:
         cls_twt['tweet_form'][value] = 'non duplicate'
+
+
+test_train_redu = pd.read_csv('unlabeled_training.csv')
+test_train_redu['tweet_class'].value_counts()
+test_train_redu = test_train_redu.set_index('Unnamed: 0')
+test_train_redu.index.name = None
+test_train_redu.index.to_list() == unlabeled.index.to_list()
+
+test_train = test_train_redu.drop(columns=['base_text']).join(unlabeled.drop(columns=['tweet_class']))
+test_train['tweet_form'] = 'non duplicate'
+
+
+for value in list(test_train.index):
+    cls_twt['tweet_class'][value] = test_train['tweet_class'][value]
+
+
+
+
 
 
