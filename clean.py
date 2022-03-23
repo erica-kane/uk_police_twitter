@@ -208,7 +208,7 @@ wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1607, ra
 
 unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
 
-unlabeled[['base_text', 'tweet_class']].to_csv('unlabeled_training.csv')
+#unlabeled[['base_text', 'tweet_class']].to_csv('unlabeled_training.csv')
 
 
 # cls_twt is full data with duplicates labelled 
@@ -219,3 +219,16 @@ unlabeled[['base_text', 'tweet_class']].to_csv('unlabeled_training.csv')
 # These 2 new data sets should add to 35709
 
 # Once the data is all classfied it can be joined back with the duplicate tweets 
+test_train = pd.read_csv('unlabeled_training.csv')
+test_train['tweet_class'].value_counts()
+
+cls_twt['tweet_form'] = 0
+for value in cls_twt.index.to_list():
+    if cls_twt['tweet_class'][value] != 0:
+        cls_twt['tweet_form'][value] = 'duplicate'
+
+for value in cls_twt.index.to_list():
+    if cls_twt['tweet_class'][value] == 0:
+        cls_twt['tweet_form'][value] = 'non duplicate'
+
+
