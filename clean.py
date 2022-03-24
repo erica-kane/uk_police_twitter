@@ -183,9 +183,6 @@ def drop_mention(base_text):
 cls_twt = cls_twt[cls_twt["base_text"].apply(drop_mention)]
 cls_twt['tweet_class'] = cls_twt['tweet_class'].fillna(0)
 
-# Save data to trial naive bayes model 
-#cls_twt.to_csv('practice_tweets.csv')
-
 # See how many tweets are from each force in non-labelled tweets 
 ((cls_twt[cls_twt['tweet_class'] == 0.0])['police_force'].value_counts(normalize=True)*100).round(2)
 # you want 1/4 of the unlabelled tweets to label, which is 25% of 35709
@@ -241,6 +238,8 @@ test_train['tweet_form'] = 'non duplicate'
 
 for value in list(test_train.index):
     cls_twt['tweet_class'][value] = test_train['tweet_class'][value]
+
+cls_twt.to_csv('analysis_tweets.csv')
 
 
 
