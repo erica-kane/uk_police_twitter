@@ -5,6 +5,12 @@ library(tidytext)
 library(purrr)
 library(data.table)
 library(tidyr)
+library(stringr)
+library(tokenizers)
+library(tidytext)
+library(qdap)
+library(spacyr)
+library(tm)
 
 plot_tweets = read_csv('analysis_tweets.csv')
 plot_tweets = select(plot_tweets, -'X1')
@@ -51,9 +57,19 @@ plot_tweets %>%
   theme_minimal()
 
 # Language per class 
+plot_tweets$test_token_tweet = tokenize_tweets(plot_tweets$base_text)
 
-mutate(plot_tweets, test_token_tweet=list(token_tweet)) %>%
-  sample_n(500) %>%
+remove = c('cant', 'take', 'will', 'make', 'can', stopwords())
+
+word_removal = function(token_list) {
+  removed_list = token_list[! token_list %in% remove]
+  return(removed_list)
+}
+
+plot_tweets$test_token_tweet = lapply(plot_tweets$test_token_tweet, word_removal)
+
+plot_tweets%>%
+  #sample_n(500) %>%
   unnest_longer(test_token_tweet) %>%
   group_by(police_force, tweet_class) %>%
   count(test_token_tweet, sort=TRUE) %>%
