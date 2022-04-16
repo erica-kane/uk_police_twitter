@@ -1,6 +1,10 @@
 library(dplyr)
 library(readr)
 library(ggplot2)
+library(tidytext)
+library(purrr)
+library(data.table)
+library(tidyr)
 
 plot_tweets = read_csv('analysis_tweets.csv')
 plot_tweets = select(plot_tweets, -'X1')
@@ -46,8 +50,23 @@ plot_tweets %>%
   labs(x = 'Date', y = 'Tweet count (aggregated by month)', title = 'The use of classes per police force over time', color = 'Tweet class') +
   theme_minimal()
 
-# 
+# Language per class 
 
+mutate(plot_tweets, test_token_tweet=list(token_tweet)) %>%
+  sample_n(500) %>%
+  unnest_longer(test_token_tweet) %>%
+  group_by(police_force, tweet_class) %>%
+  count(test_token_tweet, sort=TRUE) %>%
+  slice_max(n, n=20) %>%
+  #mutate(token_tweet=reorder_within(token_tweet, n, list(country, tweet_type))) %>%
+  ggplot(aes(test_token_tweet, n)) +
+  facet_wrap(~police_force + tweet_class, scales="free") +
+  geom_col(fill = "gray80", colour='black', size = 0.3) +
+  xlab(NULL) +
+  coord_flip() + 
+  theme_minimal() +
+  labs(x = 'Words', y = 'Word frequency', title = 'Word frequencies in USA and UK police force
+tweets and replies')
 
 
 
