@@ -241,6 +241,8 @@ for value in list(test_train.index):
 
 cls_twt.to_csv('analysis_tweets.csv')
 
+cls_twt.to_json('analysis_tweets.json')
+
 
 
 
