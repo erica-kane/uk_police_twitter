@@ -1,36 +1,39 @@
 import pandas as pd
-import nltk
-from nltk.tokenize import TweetTokenizer
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-import string 
-nltk.download('stopwords')
+import spacy
+from spacytextblob.spacytextblob import SpacyTextBlob
+import re
+import random
 
 tweets = pd.read_csv('analysis_tweets.csv', index_col=0)
 
-# redo token_tweet column
-tk = TweetTokenizer()
-stopword_set = set(stopwords.words('english'))
-punctuation_set = set(string.punctuation)
+nlp = spacy.load("en_core_web_md")
+nlp.add_pipe("merge_entities")
+nlp.add_pipe('spacytextblob')
+nlp.tokenizer.token_match = re.compile("^#\w+$").match
 
-def token_tweet(string):
-    lower_string = string.lower()
-    token_string = tk.tokenize(lower_string)
-    token_string_without_sw = [word for word in token_string if not word in stopword_set]
-    token_string_without_punc = [word for word in token_string_without_sw if not word in punctuation_set]
-    return token_string_without_punc
+black_list = set(['|'])
 
-tweets['token_tweet'] = tweets['base_text'].apply(token_tweet)
+def clean_tweet(tweet):
+    cleaned_tokens = []
+    doc = nlp(tweet)
+    for x in doc:
+        if not x.is_stop and not x.is_space and not x.is_punct and x.text not in black_list:
+            cleaned = x.lemma_.lower()
+            cleaned_tokens.append(cleaned)
+    return cleaned_tokens
 
-# lower case 
-# tokenizing 
-# stop word removal
-# punctuation removal 
-# stem 
-# lemma
+def prep_tweet(tweet):
+    cleaned = clean_tweet(tweet)
+    joined = "_!_".join(cleaned)
+    return joined
 
-# lemma and stem 
-
-# join string back together with '_new_token_'
+tweets["new_token_tweet"] = tweets["base_text"].apply(prep_tweet)
 
 # sentiment 
+from transformers import pipeline
+sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
+
+data = list(tweets['base_text'])
+sentiment_scores = sentiment_pipeline(data)
+
+tweets.to_csv('pre_pro_tweets.csv')
