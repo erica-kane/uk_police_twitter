@@ -239,8 +239,9 @@ test_train['tweet_form'] = 'non duplicate'
 for value in list(test_train.index):
     cls_twt['tweet_class'][value] = test_train['tweet_class'][value]
 
-cls_twt.to_csv('analysis_tweets.csv')
 
+# Write out data for extra pre-processing
+cls_twt.to_csv('analysis_tweets.csv')
 cls_twt.to_json('analysis_tweets.json')
 
 
