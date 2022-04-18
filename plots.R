@@ -66,7 +66,7 @@ plot_tweets %>%
   labs(x = 'Date', y = 'Tweet count (aggregated by month)', title = 'The use of classes per police force over time', color = 'Tweet class') +
   theme_minimal()
 
-# Language per class 
+# Language per class (TF IDF)
 plot_tweets%>%
   #sample_n(500) %>%
   unnest_longer(token_tweet_list) %>%
@@ -82,6 +82,16 @@ plot_tweets%>%
   theme_minimal() +
   labs(x = 'Words', y = 'Word frequency', title = 'Word frequencies in USA and UK police force
 tweets and replies')
+
+# Sentiment per force/class
+
+# Replies per force (class of replies)
+
+# Common # and @ per force
+
+# Engagement per force and category (retweet, like, quote)
+
+# Heat map
 
 
 
