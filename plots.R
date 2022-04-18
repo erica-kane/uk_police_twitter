@@ -11,8 +11,10 @@ library(tidytext)
 library(qdap)
 library(spacyr)
 library(tm)
+library(textstem)
+library(lubridate, warn.conflicts = FALSE)
 
-plot_tweets = read_csv('analysis_tweets.csv')
+plot_tweets = read_csv('pre_pro_tweets.csv')
 plot_tweets = select(plot_tweets, -'X1')
 
 plot_tweets = plot_tweets[plot_tweets$tweet_class > 0, ] 
@@ -20,7 +22,15 @@ plot_tweets = plot_tweets[plot_tweets$tweet_class < 100, ]
 plot_tweets$tweet_class = as.factor(plot_tweets$tweet_class)
 plot_tweets$date = as.Date(plot_tweets$date)
 
+# Rename classes
 plot_tweets$tweet_class = recode(plot_tweets$tweet_class, '1' = "Pushing information", '2' = "Engagement", '3' = "Intelligence gathering")
+
+# Split token string 
+split_tokens = function(tweet) {
+  token_tweet = str_split(tweet, '_!_')[[1]]
+  return(token_tweet)
+}
+plot_tweets$token_tweet_list = lapply(plot_tweets$new_token_tweet, split_tokens)
 
 # Plot for Class per force 
 ggplot(plot_tweets, aes(police_force)) + 
@@ -57,25 +67,14 @@ plot_tweets %>%
   theme_minimal()
 
 # Language per class 
-plot_tweets$test_token_tweet = tokenize_tweets(plot_tweets$base_text)
-
-remove = c('cant', 'take', 'will', 'make', 'can', stopwords())
-
-word_removal = function(token_list) {
-  removed_list = token_list[! token_list %in% remove]
-  return(removed_list)
-}
-
-plot_tweets$test_token_tweet = lapply(plot_tweets$test_token_tweet, word_removal)
-
 plot_tweets%>%
   #sample_n(500) %>%
-  unnest_longer(test_token_tweet) %>%
+  unnest_longer(token_tweet_list) %>%
   group_by(police_force, tweet_class) %>%
-  count(test_token_tweet, sort=TRUE) %>%
+  count(token_tweet_list, sort=TRUE) %>%
   slice_max(n, n=20) %>%
   #mutate(token_tweet=reorder_within(token_tweet, n, list(country, tweet_type))) %>%
-  ggplot(aes(test_token_tweet, n)) +
+  ggplot(aes(token_tweet_list, n)) +
   facet_wrap(~police_force + tweet_class, scales="free") +
   geom_col(fill = "gray80", colour='black', size = 0.3) +
   xlab(NULL) +
