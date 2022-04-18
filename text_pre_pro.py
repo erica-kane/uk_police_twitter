@@ -36,4 +36,21 @@ sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-ro
 data = list(tweets['base_text'])
 sentiment_scores = sentiment_pipeline(data)
 
+# Create sentiment label 
+sentiment_labels = []
+
+for value in sentiment_scores:
+    sentiment_labels.append(value.get('label'))
+
+tweets['sentiment_label'] = sentiment_labels
+
+# Create sentiment score 
+sentiment_score = []
+
+for value in sentiment_scores:
+    sentiment_score.append(value.get('score'))
+
+tweets['sentiment_score'] = sentiment_score
+
+# Save data for classification
 tweets.to_csv('pre_pro_tweets.csv')
