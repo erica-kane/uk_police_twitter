@@ -52,5 +52,17 @@ for value in sentiment_scores:
 
 tweets['sentiment_score'] = sentiment_score
 
+# Make new variable with edited sentiment score
+def get_sent_score(row):
+    sen_lab = row['sentiment_label']
+    if  sen_lab == 'Positive':
+        return row['sentiment_score']
+    elif sen_lab == 'Neutral':
+        return 0
+    elif sen_lab == 'Negative':
+        return row['sentiment_score']*-1
+
+tweets['sentiment_value'] = tweets.apply(get_sent_score, axis=1)
+
 # Save data for classification
 tweets.to_csv('pre_pro_tweets.csv')
