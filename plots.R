@@ -66,7 +66,7 @@ plot_tweets %>%
   labs(x = 'Date', y = 'Tweet count (aggregated by month)', title = 'The use of classes per police force over time', color = 'Tweet class') +
   theme_minimal()
 
-# Language per class (TF IDF)
+# Language per class 
 plot_tweets%>%
   #sample_n(500) %>%
   unnest_longer(token_tweet_list) %>%
@@ -83,11 +83,37 @@ plot_tweets%>%
   labs(x = 'Words', y = 'Word frequency', title = 'Word frequencies in USA and UK police force
 tweets and replies')
 
-# Sentiment per force/class
+# TF IDF
 
 # Replies per force (class of replies)
+plot_tweets %>%
+  filter(tweet_type == 'reply') %>%
+  ggplot(aes(x = police_force)) +
+  geom_bar(stat = 'count', fill = 'skyblue', color = 'grey') +
+  geom_text(stat='count', aes(label=..count..), vjust=1.6, color = 'white') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.65)) +
+  labs(x = 'Police force', y = 'Number of replies') 
+
+plot_tweets %>%
+  filter(tweet_type == 'reply') %>%
+  ggplot(aes(police_force)) + 
+  geom_bar(stat = 'count', aes(fill = tweet_class), position = 'fill', color = 'grey') +
+  scale_fill_brewer(name = 'Tweet class') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.65)) +
+  labs(x = 'Police force', y = 'Percentage of replies') 
 
 # Common # and @ per force
+
+# Sentiment per force/class
+ggplot(data = plot_tweets, aes(x = sentiment_value, fill = sentiment_label)) + 
+  geom_histogram(bins = 7, alpha = 0.8) + 
+  facet_wrap(~ police_force, ncol = 1, scales="free") +
+  scale_fill_manual(values = c("firebrick2", "chartreuse", 'gold1')) +
+  labs(x = 'Sentiment score', y = 'Number of tweets', fill = 'Sentiment value') +
+  theme_minimal()
+
 
 # Engagement per force and category (retweet, like, quote)
 
