@@ -80,7 +80,8 @@ tweets = all_tweets[all_tweets.tweet_type != 'retweet'].reset_index(drop=True)
 
 tweets.dropna(subset=["base_text"], inplace=True)
 
-#tweets.to_csv('plot_tweets.csv')
+# CREATE PLOT_TWEETS
+tweets.to_csv('plot_tweets.csv')
 
 tweets.head()
 
@@ -105,10 +106,13 @@ all_dupes = tweets[tweets['base_text'].duplicated()]
 unique_dupes = pd.DataFrame(all_dupes['base_text'].unique())
 unique_dupes['tweet_class'] = 0
 unique_dupes = unique_dupes.rename(columns={0: "base_text"})
+
+# CREATE DUPE TWEET
 unique_dupes.to_csv('dupetweet.csv')
 
 # Data has been manually edited outside of python and classes added
 
+# READ IN DUPE TWEET WITH CLASS
 # Read data back in and match classification up to original data 
 final_dupes = pd.read_csv('dupetweet_withclass.csv')
 final_dupes = final_dupes.drop(['Unnamed: 0'], axis=1)
@@ -205,7 +209,8 @@ wyp = no_cls[no_cls['police_force']== 'West Yorkshire Police'].sample(n=1607, ra
 
 unlabeled = pd.concat([wmp, gmp, asp, met, wyp])
 
-#unlabeled[['base_text', 'tweet_class']].to_csv('unlabeled_training.csv')
+# CREATE UNLABELED TRAINING 
+unlabeled[['base_text', 'tweet_class']].to_csv('unlabeled_training.csv')
 
 
 # cls_twt is full data with duplicates labelled 
@@ -225,8 +230,8 @@ for value in cls_twt.index.to_list():
     if cls_twt['tweet_class'][value] == 0:
         cls_twt['tweet_form'][value] = 'non duplicate'
 
-
-test_train_redu = pd.read_csv('unlabeled_training.csv')
+# READ BACK IN LABELED TRAINING 
+test_train_redu = pd.read_csv('labeled_training.csv')
 test_train_redu['tweet_class'].value_counts()
 test_train_redu = test_train_redu.set_index('Unnamed: 0')
 test_train_redu.index.name = None
@@ -239,7 +244,7 @@ test_train['tweet_form'] = 'non duplicate'
 for value in list(test_train.index):
     cls_twt['tweet_class'][value] = test_train['tweet_class'][value]
 
-
+# CREATE ANALYSIS TWEETS
 # Write out data for extra pre-processing
 cls_twt.to_csv('analysis_tweets.csv')
 cls_twt.to_json('analysis_tweets.json')
