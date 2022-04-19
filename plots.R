@@ -108,9 +108,9 @@ plot_tweets %>%
 
 # Sentiment per force/class
 ggplot(data = plot_tweets, aes(x = sentiment_value, fill = sentiment_label)) + 
-  geom_histogram(bins = 7, alpha = 0.8) + 
+  geom_histogram(aes(y = stat(density)), bins = 5, alpha = 0.8) + 
   facet_wrap(~ police_force, ncol = 1, scales="free") +
-  scale_fill_manual(values = c("firebrick2", "chartreuse", 'gold1')) +
+  scale_fill_manual(values = c("firebrick2", 'gold1', 'chartreuse')) +
   labs(x = 'Sentiment score', y = 'Number of tweets', fill = 'Sentiment value') +
   theme_minimal()
 
