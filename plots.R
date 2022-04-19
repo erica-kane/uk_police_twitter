@@ -14,6 +14,7 @@ library(tm)
 library(textstem)
 library(lubridate, warn.conflicts = FALSE)
 library(gdata)
+library(wordcloud)
 
 plot_tweets = read_csv('pre_pro_tweets.csv')
 plot_tweets = select(plot_tweets, -'X1')
@@ -74,7 +75,6 @@ plot_tweets%>%
   group_by(police_force, tweet_class) %>%
   count(token_tweet_list, sort=TRUE) %>%
   slice_max(n, n=20) %>%
-  #mutate(token_tweet=reorder_within(token_tweet, n, list(country, tweet_type))) %>%
   ggplot(aes(token_tweet_list, n)) +
   facet_wrap(~police_force + tweet_class, scales="free") +
   geom_col(fill = "gray80", colour='black', size = 0.3) +
@@ -105,11 +105,9 @@ plot_tweets %>%
   theme(axis.text.x = element_text(angle = 45, vjust = 0.65)) +
   labs(x = 'Police force', y = 'Percentage of replies') 
 
-
-
-# Common # per force
-# Funciton to get non # words as NA
-delete_rows = function(word) {
+# Common # and @ per force
+## Function to get non # words as NA
+get_hash = function(word) {
  if (startsWith(word, '#') != TRUE) {
     return(NA) 
  } else {
@@ -117,31 +115,38 @@ delete_rows = function(word) {
  }
 }
 
-# unnest 
+## Function to get non @ words as NA
+get_mention = function(word) {
+  if (startsWith(word, '@') != TRUE) {
+    return(NA) 
+  } else {
+    return(word)
+  }
+}
+
+## New data 
 subset_tweets = plot_tweets %>%
   sample_n(500) %>%
   unnest_longer(token_tweet_list) %>%
   group_by(police_force, tweet_class) %>%
   count(token_tweet_list, sort=TRUE)
 
-# Apply function
-subset_tweets$token_tweet_list = lapply(subset_tweets$token_tweet_list, delete_rows)
+## Apply functions
+subset_tweets$hashtags = lapply(subset_tweets$token_tweet_list, get_hash)
+subset_tweets$mention = lapply(subset_tweets$token_tweet_list, get_mention)
 
+## Plot # word cloud 
 subset_tweets %>% 
-   drop_na(token_tweet_list) %>%
+  mutate(hashtags = sapply(hashtags, toString)) %>%
+  mutate(hashtags = na_if(hashtags, "NA")) %>%
+  drop_na() %>%
   slice_max(n, n=20) %>%
-  #mutate(token_tweet=reorder_within(token_tweet, n, list(country, tweet_type))) %>%
-  ggplot(aes(token_tweet_list, n)) +
-  facet_wrap(~police_force + tweet_class, scales="free") +
-  geom_col(fill = "gray80", colour='black', size = 0.3) +
-  xlab(NULL) +
-  coord_flip() + 
-  theme_minimal() +
-  labs(x = 'Words', y = 'Word frequency', title = 'Word frequencies in USA and UK police force
-tweets and replies')
 
-# Common @ per force
-
+## Plot @ word cloud 
+subset_tweets %>% 
+  mutate(mention = sapply(mention, toString)) %>%
+  mutate(mention = na_if(mention, "NA")) %>%
+  drop_na() 
 
 
 # Sentiment per force/class
