@@ -13,6 +13,7 @@ library(spacyr)
 library(tm)
 library(textstem)
 library(lubridate, warn.conflicts = FALSE)
+library(gdata)
 
 plot_tweets = read_csv('pre_pro_tweets.csv')
 plot_tweets = select(plot_tweets, -'X1')
@@ -104,18 +105,55 @@ plot_tweets %>%
   theme(axis.text.x = element_text(angle = 45, vjust = 0.65)) +
   labs(x = 'Police force', y = 'Percentage of replies') 
 
-# Common # and @ per force
+
+
+# Common # per force
+# Funciton to get non # words as NA
+delete_rows = function(word) {
+ if (startsWith(word, '#') != TRUE) {
+    return(NA) 
+ } else {
+   return(word)
+ }
+}
+
+# unnest 
+subset_tweets = plot_tweets %>%
+  sample_n(500) %>%
+  unnest_longer(token_tweet_list) %>%
+  group_by(police_force, tweet_class) %>%
+  count(token_tweet_list, sort=TRUE)
+
+# Apply function
+subset_tweets$token_tweet_list = lapply(subset_tweets$token_tweet_list, delete_rows)
+
+subset_tweets %>% 
+   drop_na(token_tweet_list) %>%
+  slice_max(n, n=20) %>%
+  #mutate(token_tweet=reorder_within(token_tweet, n, list(country, tweet_type))) %>%
+  ggplot(aes(token_tweet_list, n)) +
+  facet_wrap(~police_force + tweet_class, scales="free") +
+  geom_col(fill = "gray80", colour='black', size = 0.3) +
+  xlab(NULL) +
+  coord_flip() + 
+  theme_minimal() +
+  labs(x = 'Words', y = 'Word frequency', title = 'Word frequencies in USA and UK police force
+tweets and replies')
+
+# Common @ per force
+
+
 
 # Sentiment per force/class
 ggplot(data = plot_tweets, aes(x = sentiment_value, fill = sentiment_label)) + 
   geom_histogram(aes(y = stat(density)), bins = 5, alpha = 0.8) + 
   facet_wrap(~ police_force, ncol = 1, scales="free") +
-  scale_fill_manual(values = c("firebrick2", 'gold1', 'chartreuse')) +
+  scale_fill_manual(values = c("firebrick2", 'gold1', 'green3')) +
   labs(x = 'Sentiment score', y = 'Number of tweets', fill = 'Sentiment value') +
   theme_minimal()
 
-
 # Engagement per force and category (retweet, like, quote)
+
 
 # Heat map
 
