@@ -100,13 +100,15 @@ plot_tweets %>%
   separate(force_class, c("police_force", "tweet_class"), sep="_") %>%
   group_by(police_force, tweet_class) %>%
   slice_max(tf_idf, n=10, with_ties=FALSE) %>%
-  ggplot(aes(x = reorder(token_tweet_list, n), y = n)) +
+  ggplot(aes(x = reorder(token_tweet_list, n), y = n, fill = police_force)) +
   facet_wrap(~police_force + tweet_class, scales="free") +
-  geom_col(fill = "gray80", colour='black', size = 0.3) +
+  scale_fill_manual(values = c('cadetblue3', 'blue', 'deepskyblue', 'dodgerblue', 'dodgerblue4')) +
+  geom_col(colour='black', size = 0.3, alpha = 0.5) +
   xlab(NULL) +
   coord_flip() + 
   theme_minimal() +
-  labs(x = 'Words with highest TF-IDF', y = 'Word frequency')
+  theme(legend.position = "none") +
+  labs(x = 'Words with highest TF-IDF', y = 'Word frequency') 
 
 # Replies per force (class of replies)
 plot_tweets %>%
@@ -135,12 +137,14 @@ plot_tweets %>%
   count(token_tweet_list, sort=TRUE) %>%
   filter(startsWith(token_tweet_list, '#')) %>%
   slice_max(n, n=20, with_ties=FALSE) %>%
-  ggplot(aes(x = reorder(token_tweet_list, n), y = n)) +
+  ggplot(aes(x = reorder(token_tweet_list, n), y = n, fill = police_force)) +
   facet_wrap(~police_force, scales="free") +
-  geom_col(fill = "gray80", colour='black', size = 0.3) +
+  scale_fill_manual(values = c('cadetblue3', 'blue', 'deepskyblue', 'dodgerblue', 'dodgerblue4')) +
+  geom_col(colour='black', size = 0.3, alpha = 0.7) +
   xlab(NULL) +
   coord_flip() + 
   theme_minimal() +
+  theme(legend.position = "none") +
   labs(x = 'Hashtags', y = 'Word frequency')
 
 # Common @ per force
@@ -150,13 +154,15 @@ plot_tweets %>%
   group_by(police_force) %>%
   count(token_tweet_list, sort=TRUE) %>%
   filter(startsWith(token_tweet_list, '@')) %>%
-  slice_max(n, n=10, with_ties=FALSE) %>%
-  ggplot(aes(x = reorder(token_tweet_list, n), y = n)) +
+  slice_max(n, n=20, with_ties=FALSE) %>%
+  ggplot(aes(x = reorder(token_tweet_list, n), y = n, fill = police_force)) +
   facet_wrap(~police_force, scales="free") +
-  geom_col(fill = "gray80", colour='black', size = 0.3) +
+  scale_fill_manual(values = c('cadetblue3', 'blue', 'deepskyblue', 'dodgerblue', 'dodgerblue4')) +
+  geom_col(colour='black', size = 0.3, alpha = 0.7) +
   xlab(NULL) +
   coord_flip() + 
   theme_minimal() +
+  theme(legend.position = "none") +
   labs(x = 'Mentions', y = 'Word frequency')
 
 # Sentiment per force/class
