@@ -115,7 +115,7 @@ plot_tweets %>%
   filter(tweet_type == 'reply') %>%
   ggplot(aes(x = police_force)) +
   geom_bar(stat = 'count', fill = 'skyblue', color = 'grey') +
-  geom_text(stat='count', aes(label=..count..), vjust=1.6, color = 'white') +
+  geom_text(stat='count', aes(label=..count..), vjust=-0.5, color = 'grey') +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, vjust = 0.65)) +
   labs(x = 'Police force', y = 'Number of replies') 
@@ -167,14 +167,26 @@ plot_tweets %>%
 
 # Sentiment per force/class
 ggplot(data = plot_tweets, aes(x = sentiment_value, fill = sentiment_label)) + 
-  geom_histogram(aes(y = stat(density)), bins = 5, alpha = 0.8) + 
+  geom_histogram(aes(y = stat(density)), bins = 5, alpha = 0.7) + 
   facet_wrap(~ police_force, ncol = 1, scales="free") +
   scale_fill_manual(values = c("firebrick2", 'gold1', 'green3')) +
   labs(x = 'Sentiment score', y = 'Number of tweets', fill = 'Sentiment value') +
   theme_minimal()
 
 # Engagement per force and category (retweet, like, quote)
-
+plot_tweets %>%
+  select(retweet_count, reply_count, like_count, quote_count, police_force, tweet_class) %>%
+  pivot_longer(cols = retweet_count:quote_count) %>%
+  group_by(police_force, tweet_class, name) %>%
+  summarise(frequency = sum(value)) %>%
+  mutate(frequency = frequency/sum(frequency)*100) %>%
+  ggplot(aes(fill = name, x = police_force, y = frequency)) +
+  geom_bar(position = 'dodge', stat = 'identity', alpha = 0.8) +
+  facet_wrap(~ tweet_class, ncol = 1) +
+  theme_minimal() +
+  scale_fill_manual(values = c('skyblue1', 'blue', 'deepskyblue', 'dodgerblue'), labels = c('Likes', 'Quotes', 'Replies', 'Retweets'))+
+  labs(x = 'Police force', y = 'Frequency of tweets', fill = 'Tweet metric') +
+  ylim(0, 100)
 
 # Heat map
 
