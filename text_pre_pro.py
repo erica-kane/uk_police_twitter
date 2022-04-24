@@ -66,3 +66,5 @@ tweets['sentiment_value'] = tweets.apply(get_sent_score, axis=1)
 
 # Save data for classification
 tweets.to_csv('pre_pro_tweets.csv')
+
+tweets
