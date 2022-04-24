@@ -15,8 +15,19 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Read the data 
-all_tweets = pd.read_csv('analysis_tweets.csv')
+all_tweets = pd.read_csv('pre_pro_tweets.csv')
 all_tweets = all_tweets.drop(['Unnamed: 0'], axis=1)
+
+# Unsplit tokenized column
+def split_tweet(tweet):
+    str_tweet = str(tweet)
+    split_tweet = str_tweet.split('_!_')
+    joined_tweet = ' '.join(split_tweet)
+    return joined_tweet
+
+all_tweets['pre_pro_tweet'] = all_tweets['new_token_tweet'].apply(split_tweet)
+
+# Get tweets with labels only and drop 100 
 tweets_with_labels = all_tweets[all_tweets['tweet_class']!= 0][all_tweets['tweet_form'] == 'non duplicate']
 tweets_with_labels = tweets_with_labels[tweets_with_labels['tweet_class']!=100.0]
 
@@ -56,9 +67,6 @@ test_with_base['pred_class'] = predicted_categories
 test_with_base.to_csv('test_labels.csv')
 # Save tweets which are classified incorrectly 
 test_with_base[test_with_base['pred_class']!= test_with_base['tweet_class']].to_csv('incorrect_labels.csv')
-
-
-
 
 
 
