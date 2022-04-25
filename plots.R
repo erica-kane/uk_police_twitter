@@ -202,8 +202,8 @@ test_labels %>%
   theme_minimal()+
   theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)) +
   labs(x = '\nTweet class', y = 'Predicted class\n') + 
-  scale_x_discrete(labels=c('1' = "Pushing information", "2" = "Engagement", "3" = "Intelligence gathering")) +
-  scale_y_discrete(labels=c('1' = "Pushing information", "2" = "Engagement", "3" = "Intelligence gathering")) 
+  scale_x_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) +
+  scale_y_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) 
 
 
 
