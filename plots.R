@@ -188,11 +188,11 @@ plot_tweets %>%
   labs(x = 'Police force', y = 'Frequency of tweets', fill = 'Tweet metric') +
   ylim(0, 100)
 
-# Heat map
-test_labels = read_csv('test_labels.csv')
-test_labels = select(test_labels, -'X1')
+# Confusion matrix - Naive Bayes
+test_labels_nb = read_csv('nb_test_labels.csv')
+test_labels_nb = select(test_labels_nb, -'X1')
 
-test_labels %>%
+test_labels_nb %>%
   select(tweet_class, pred_class) %>%
   count(tweet_class, pred_class) %>%
   ggplot(aes(factor(tweet_class), factor(pred_class), fill = n)) +
@@ -205,6 +205,22 @@ test_labels %>%
   scale_x_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) +
   scale_y_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) 
 
+# Confusion matrix - Logit
+test_labels_logit = read_csv('logit_test_labels.csv')
+test_labels_logit = select(test_labels_logit, -'X1')
+
+test_labels_logit %>%
+  select(tweet_class, pred_class) %>%
+  count(tweet_class, pred_class) %>%
+  ggplot(aes(factor(tweet_class), factor(pred_class), fill = n)) +
+  geom_tile(color = "white", lwd = 0.2, linetype = 1) +
+  scale_fill_gradient(low = "skyblue1", high = "blue4") +
+  geom_text(aes(label = n), colour = "white") +
+  theme_minimal()+
+  theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)) +
+  labs(x = '\nTweet class', y = 'Predicted class\n') + 
+  scale_x_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) +
+  scale_y_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) 
 
 
 
