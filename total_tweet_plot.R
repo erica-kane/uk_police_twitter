@@ -9,6 +9,7 @@ plot_tweets = select(plot_tweets, -'X1')
 
 plot_tweets$date = as.Date(plot_tweets$date)
 
+# These totals can be given in a table 
 plot_tweets %>%
   mutate(week=floor_date(date, unit="week")) %>%
   group_by(week, police_force) %>%
@@ -22,6 +23,12 @@ plot_tweets %>%
   labs(x = 'Date', y = 'Tweet count (aggregated by week)', title = 'Police force tweet frequency', color = 'Police force') +
   theme_minimal() +
   theme(legend.position = 'none')
+
+plot_tweets %>%
+  select(police_force, tweet_type) %>%
+  group_by(police_force, tweet_type) %>%
+  count()
+    
 
 
 plot_tweets %>%
