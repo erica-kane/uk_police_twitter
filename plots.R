@@ -54,7 +54,11 @@ plot_tweets %>%
   geom_line(size = 0.3) + 
   facet_wrap(~ police_force, ncol = 1, scales="free") +
   labs(x = 'Date', y = 'Tweet count (aggregated by week)', title = 'Police force tweet frequency per class', color = 'Tweet class') +
-  theme_minimal()
+  theme_minimal() +
+  geom_vline(xintercept=as.numeric(as.Date('2020-05-25')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') +
+  geom_vline(xintercept=as.numeric(as.Date('2021-03-04')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') +
+  geom_vline(xintercept=as.numeric(as.Date('2020-03-20')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') 
+  
 
 # Line graph per month
 plot_tweets %>%
