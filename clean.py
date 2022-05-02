@@ -76,14 +76,13 @@ def token_tweet(string):
 
 all_tweets['token_tweet'] = all_tweets['base_text'].apply(token_tweet)
 
-tweets = all_tweets[all_tweets.tweet_type != 'retweet'].reset_index(drop=True)
-
-tweets.dropna(subset=["base_text"], inplace=True)
-
 # CREATE PLOT_TWEETS
-tweets.to_csv('plot_tweets.csv')
+all_tweets.to_csv('plot_tweets.csv')
 
-tweets.head()
+# Drop retweet
+tweets = all_tweets[all_tweets.tweet_type != 'retweet'].reset_index(drop=True)
+# Drop na from base_text
+tweets.dropna(subset=["base_text"], inplace=True)
 
 # Deal with duplicate tweets 
 
