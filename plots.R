@@ -17,7 +17,7 @@ library(gdata)
 library(wordcloud)
 
 plot_tweets = read_csv('pre_pro_tweets.csv')
-plot_tweets = select(plot_tweets, -'X1')
+plot_tweets = dplyr::select(plot_tweets, -'X1')
 
 plot_tweets = plot_tweets[plot_tweets$tweet_class > 0, ] 
 plot_tweets = plot_tweets[plot_tweets$tweet_class < 100, ] 
@@ -25,7 +25,7 @@ plot_tweets$tweet_class = as.factor(plot_tweets$tweet_class)
 plot_tweets$date = as.Date(plot_tweets$date)
 
 # Rename classes
-plot_tweets$tweet_class = recode(plot_tweets$tweet_class, '1' = "Pushing information", '2' = "Engagement", '3' = "Intelligence gathering")
+plot_tweets$tweet_class = dplyr::recode(plot_tweets$tweet_class, '1' = "Pushing information", '2' = "Engagement", '3' = "Intelligence gathering")
 
 # Split token string 
 split_tokens = function(tweet) {
@@ -93,7 +93,7 @@ blacklist = c("bristol", 'somerset', 'avon', 'bath', 'west yorkshire',"leeds")
 # TF IDF
 plot_tweets %>%
   # sample_n(100) %>%
-  select(police_force, tweet_class, token_tweet_list) %>%
+  dplyr::select(police_force, tweet_class, token_tweet_list) %>%
   unnest_longer(token_tweet_list) %>%
   filter(!startsWith(token_tweet_list, '#')) %>%
   filter(!startsWith(token_tweet_list, '@')) %>%
@@ -179,7 +179,7 @@ ggplot(data = plot_tweets, aes(x = sentiment_value, fill = sentiment_label)) +
 
 # Engagement per force and category (retweet, like, quote)
 plot_tweets %>%
-  select(retweet_count, reply_count, like_count, quote_count, police_force, tweet_class) %>%
+  dplyr::select(retweet_count, reply_count, like_count, quote_count, police_force, tweet_class) %>%
   pivot_longer(cols = retweet_count:quote_count) %>%
   group_by(police_force, tweet_class, name) %>%
   summarise(frequency = sum(value)) %>%
