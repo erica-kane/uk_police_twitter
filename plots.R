@@ -66,7 +66,7 @@ plot_tweets %>%
   group_by(month, police_force, tweet_class) %>%
   summarise(Count = n()) %>%
   ggplot(aes(x = month, y = Count, color = tweet_class)) +
-  scale_color_manual(values=c("dodgerblue1", 'gold', 'firebrick1')) +
+  scale_color_manual(values=c("lightskyblue1", 'blue4',"dodgerblue1")) +
   geom_line(size = 0.3) + 
   facet_wrap(~ police_force, ncol = 1, scales="free") +
   labs(x = 'Date', y = 'Tweet count (aggregated by month)', title = 'The use of classes per police force over time', color = 'Tweet class') +
@@ -192,22 +192,6 @@ plot_tweets %>%
   labs(x = 'Police force', y = 'Frequency of tweets', fill = 'Tweet metric') +
   ylim(0, 100)
 
-# Confusion matrix - Naive Bayes
-test_labels_nb = read_csv('nb_test_labels.csv')
-test_labels_nb = select(test_labels_nb, -'X1')
-
-test_labels_nb %>%
-  select(tweet_class, pred_class) %>%
-  count(tweet_class, pred_class) %>%
-  ggplot(aes(factor(tweet_class), factor(pred_class), fill = n)) +
-  geom_tile(color = "white", lwd = 0.2, linetype = 1) +
-  scale_fill_gradient(low = "skyblue1", high = "blue4") +
-  geom_text(aes(label = n), colour = "white") +
-  theme_minimal()+
-  theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)) +
-  labs(x = '\nTweet class', y = 'Predicted class\n') + 
-  scale_x_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) +
-  scale_y_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) 
 
 # Confusion matrix - Logit
 test_labels_logit = read_csv('logit_test_labels.csv')
