@@ -81,8 +81,8 @@ model_nb = make_pipeline(vectorizer, classifier_nb)
 model_nb.fit(x_train, y_train)
 predicted_categories_nb = model_nb.predict(x_test)
 accuracy_score(y_test, predicted_categories_nb)
-precision_score(y_test, predicted_categories_nb, average='micro')
-recall_score(y_test, predicted_categories_nb, average='micro')
+precision_score(y_test, predicted_categories_nb, average='macro')
+recall_score(y_test, predicted_categories_nb, average='macro')
 
 
 # Logistic regression - with embeddings (85 with stop words, 84 without)
@@ -110,5 +110,12 @@ plt.ylabel("predicted label")
 plt.show()
 
 
+# Classify and save entire dataset - regression with tf-idf
+tweets_without_labels = all_tweets[all_tweets['tweet_class']== 0]
+tweets_without_labels["tweet_class"] = model_logit.predict(tweets_without_labels['base_text'])
 
+final_tweets = all_tweets.copy()
+final_tweets.update(tweets_without_labels["tweet_class"])
+final_tweets['tweet_class'].value_counts()
 
+final_tweets[final_tweets['tweet_class']!=100.0].to_csv('final_tweets.csv')
