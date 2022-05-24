@@ -16,16 +16,19 @@ library(lubridate, warn.conflicts = FALSE)
 library(gdata)
 library(wordcloud)
 
-plot_tweets = read_csv('pre_pro_tweets.csv')
-plot_tweets = dplyr::select(plot_tweets, -'X1')
+plot_tweets = read_csv('final_tweets.csv')
+#plot_tweets = dplyr::select(plot_tweets, -'X1')
 
-plot_tweets = plot_tweets[plot_tweets$tweet_class > 0, ] 
-plot_tweets = plot_tweets[plot_tweets$tweet_class < 100, ] 
+#plot_tweets = plot_tweets[plot_tweets$tweet_class > 0, ] 
+#plot_tweets = plot_tweets[plot_tweets$tweet_class < 100, ] 
 plot_tweets$tweet_class = as.factor(plot_tweets$tweet_class)
 plot_tweets$date = as.Date(plot_tweets$date)
 
 # Rename classes
 plot_tweets$tweet_class = dplyr::recode(plot_tweets$tweet_class, '1' = "Pushing information", '2' = "Engagement", '3' = "Intelligence gathering")
+
+# Rename forces
+plot_tweets$police_force = dplyr::recode(plot_tweets$police_force, 'West Midlands Police' = "WMP", 'West Yorkshire Police' = "WYP", 'Avon and Somerset Police' = "ASP")
 
 # Split token string 
 split_tokens = function(tweet) {
@@ -52,14 +55,13 @@ plot_tweets %>%
   ggplot(aes(x = week, y = Count, color = tweet_class)) +
   scale_color_manual(values=c("lightskyblue1", 'blue4',"dodgerblue1")) +
   geom_line(size = 0.3) + 
-  facet_wrap(~ police_force, ncol = 1, scales="free") +
-  labs(x = 'Date', y = 'Tweet count (aggregated by week)', title = 'Police force tweet frequency per class', color = 'Tweet class') +
+  facet_wrap(~ police_force, ncol = 1) +
+  labs(x = 'Date', y = 'Tweet count (aggregated by week)', color = 'Tweet class') +
   theme_minimal() +
-  geom_vline(xintercept=as.numeric(as.Date('2020-05-25')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') +
+  geom_vline(xintercept=as.numeric(as.Date('2020-05-25')), color = 'gray41', alpha = 0.8, size = 0.2, linetype = 'dashed') +
   geom_vline(xintercept=as.numeric(as.Date('2021-03-04')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') +
-  geom_vline(xintercept=as.numeric(as.Date('2020-03-20')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') 
+  geom_vline(xintercept=as.numeric(as.Date('2020-03-20')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed')
   
-
 # Line graph per month
 plot_tweets %>%
   mutate(month=floor_date(date, unit="month")) %>%
@@ -88,7 +90,14 @@ plot_tweets%>%
   labs(x = 'Words', y = 'Word frequency', title = 'Word frequencies in USA and UK police force
 tweets and replies')
 
-blacklist = c("bristol", 'somerset', 'avon', 'bath', 'west yorkshire',"leeds")
+blacklist = c("bristol", 'somerset', 'glastonbury', 'south gloucestershire', 'oldham', 'rochdale', 'trafford', 'avon', 'bath', 'west yorkshire',"leeds",'bridgwater', 
+              'taunton', 'weston','super','mare','yeovil','greater manchester','greater manchester police', 
+              'greater', 'salford','bolton','wigan','stockport','bury','gmp', 'london',
+              'the metropolitan police', 'londoners', 'newham', 'met', 'bailey', 'hackney','kensington',
+              'the met\'s counter terrorism command', 'c.', 'lambeth', 'west midlands', 'q', 'sadam',
+              'wmp', 'birmingham', '-', 'bradford', 'wakefield', 'kirklees', 'huddersfield','calderdale',
+              'halifax', 'dewsbury', 'batley', 'keighley', 'leeds south', 'bradford west', 'carr gate',
+              'coventry', 'shipley', 'leeds east', 'cleckheaton', 'leeds north west', 'castleford')
 
 # TF IDF
 plot_tweets %>%
