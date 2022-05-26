@@ -60,11 +60,14 @@ y_test = test['tweet_class']
 
 
 # Logistic Regression - with tfidf (88 with stop words, 85 without)
+vectorizer = TfidfVectorizer()
 classifier_logit = LogisticRegression()
 model_logit = make_pipeline(vectorizer, classifier_logit)
 model_logit.fit(x_train, y_train)
 predicted_categories_logit = model_logit.predict(x_test)
 accuracy_score(y_test, predicted_categories_logit)
+precision_score(y_test, predicted_categories_logit, average=None)
+recall_score(y_test, predicted_categories_logit, average=None)
 
 # Save test tweets for logit confusion matrix
 test_with_base_logit = test[['base_text','tweet_class']]
@@ -75,14 +78,13 @@ test_with_base_logit[test_with_base_logit['pred_class']!= test_with_base_logit['
 
 
 # Naive Bayes model - with tfidf (85 with stop words, 85 without)
-vectorizer = TfidfVectorizer()
 classifier_nb = MultinomialNB()
 model_nb = make_pipeline(vectorizer, classifier_nb)
 model_nb.fit(x_train, y_train)
 predicted_categories_nb = model_nb.predict(x_test)
 accuracy_score(y_test, predicted_categories_nb)
-precision_score(y_test, predicted_categories_nb, average='macro')
-recall_score(y_test, predicted_categories_nb, average='macro')
+precision_score(y_test, predicted_categories_nb, average=None)
+recall_score(y_test, predicted_categories_nb, average=None)
 
 
 # Logistic regression - with embeddings (85 with stop words, 84 without)
@@ -92,6 +94,8 @@ model_senttrans_logit = make_pipeline(embedder, LogisticRegression())
 model_senttrans_logit.fit(list(x_train), y_train)
 pred_cat_senttrans_logit = model_senttrans_logit.predict(list(x_test))
 accuracy_score(y_test, pred_cat_senttrans_logit)
+precision_score(y_test, pred_cat_senttrans_logit, average=None)
+recall_score(y_test, pred_cat_senttrans_logit, average=None)
 
 # XGBoost - with embeddings (85 with stop words, 84 without)
 embedder = FunctionTransformer(lambda item: senttrans.encode(item, convert_to_numpy=True, show_progress_bar=False))
@@ -99,6 +103,8 @@ model_senttrans_xgb = make_pipeline(embedder, XGBClassifier(objective='multi:sof
 model_senttrans_xgb.fit(list(x_train), (y_train - 1).astype(int))
 pred_cat_senttrans_xgb = model_senttrans_xgb.predict(list(x_test))
 accuracy_score((y_test - 1).astype(int), pred_cat_senttrans_xgb)
+precision_score((y_test - 1).astype(int), pred_cat_senttrans_xgb, average=None)
+recall_score((y_test - 1).astype(int), pred_cat_senttrans_xgb, average=None)
 
 
 # Optional plotting 
