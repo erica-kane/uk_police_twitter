@@ -15,6 +15,7 @@ library(textstem)
 library(lubridate, warn.conflicts = FALSE)
 library(gdata)
 library(wordcloud)
+library(scales)
 
 plot_tweets = read_csv('final_tweets.csv')
 #plot_tweets = dplyr::select(plot_tweets, -'X1')
@@ -25,7 +26,7 @@ plot_tweets$tweet_class = as.factor(plot_tweets$tweet_class)
 plot_tweets$date = as.Date(plot_tweets$date)
 
 # Rename classes
-plot_tweets$tweet_class = dplyr::recode(plot_tweets$tweet_class, '1' = "Pushing information", '2' = "Engagement", '3' = "Intelligence gathering")
+plot_tweets$tweet_class = dplyr::recode(plot_tweets$tweet_class, '1' = "Providing information", '2' = "Engagement", '3' = "Intelligence gathering")
 
 # Rename forces
 plot_tweets$police_force = dplyr::recode(plot_tweets$police_force, 'West Midlands Police' = "WMP", 'West Yorkshire Police' = "WYP", 'Avon and Somerset Police' = "ASP")
@@ -38,12 +39,20 @@ split_tokens = function(tweet) {
 plot_tweets$token_tweet_list = lapply(plot_tweets$new_token_tweet, split_tokens)
 
 # Plot for Class per force 
+plot_tweets %>%
+  group_by(police_force, tweet_class) %>%
+  summarise(count = n() )
+
+plot_tweets %>%
+  count(police_force)
+  
 ggplot(plot_tweets, aes(police_force)) + 
   geom_bar(stat = 'count', aes(fill = tweet_class), position = 'fill', color = 'grey') +
   scale_fill_brewer(name = 'Tweet class') +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, vjust = 0.65)) +
-  labs(x = 'Police force', y = 'Percentage relative to force count') 
+  labs(x = 'Police force', y = 'Percentage relative to force count') +
+  scale_y_continuous(labels = percent_format(), limits=c(0,1))
 
 
 # Plots for use of classes per force over time 
@@ -183,6 +192,13 @@ ggplot(data = plot_tweets, aes(x = sentiment_value, fill = sentiment_label)) +
   geom_histogram(aes(y = stat(density)), bins = 5, alpha = 0.7) + 
   facet_wrap(~ police_force, ncol = 1, scales="free") +
   scale_fill_manual(values = c("firebrick2", 'gold1', 'green3')) +
+  labs(x = 'Sentiment score', y = 'Density of tweets', fill = 'Sentiment value') +
+  theme_minimal()
+
+ggplot(data = plot_tweets, aes(x = sentiment_value, fill = sentiment_label)) + 
+  geom_histogram(bins = 5, alpha = 0.7) + 
+  facet_wrap(~ tweet_class, ncol = 1, scales = 'free') +
+  scale_fill_manual(values = c("firebrick2", 'gold1', 'green3')) +
   labs(x = 'Sentiment score', y = 'Number of tweets', fill = 'Sentiment value') +
   theme_minimal()
 
@@ -200,6 +216,19 @@ plot_tweets %>%
   scale_fill_manual(values = c('skyblue1', 'blue', 'deepskyblue', 'dodgerblue'), labels = c('Likes', 'Quotes', 'Replies', 'Retweets'))+
   labs(x = 'Police force', y = 'Frequency of tweets', fill = 'Tweet metric') +
   ylim(0, 100)
+  
+plot_tweets %>%
+  dplyr::select(retweet_count, reply_count, like_count, quote_count, police_force, tweet_class) %>%
+  pivot_longer(cols = retweet_count:quote_count) %>%
+  group_by(police_force, tweet_class, name) %>%
+  summarise(frequency = sum(value)) %>%
+  #mutate(frequency = frequency/sum(frequency)*100) %>%
+  ggplot(aes(fill = name, x = tweet_class, y = frequency)) +
+  geom_bar(position = 'dodge', stat = 'identity', alpha = 0.7) +
+  facet_wrap(~ police_force, ncol = 1, scales = 'free') +
+  theme_minimal() +
+  scale_fill_manual(values = c('skyblue1', 'blue', 'deepskyblue', 'dodgerblue'), labels = c('Likes', 'Quotes', 'Replies', 'Retweets'))+
+  labs(x = 'Police force', y = 'Frequency of metric', fill = 'Tweet metric')
 
 
 # Confusion matrix - Logit
