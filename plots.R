@@ -222,9 +222,9 @@ plot_tweets %>%
   pivot_longer(cols = retweet_count:quote_count) %>%
   group_by(police_force, tweet_class, name) %>%
   summarise(frequency = sum(value)) %>%
-  #mutate(frequency = frequency/sum(frequency)*100) %>%
+  #mutate(frequency = log(frequency)) %>%
   ggplot(aes(fill = name, x = tweet_class, y = frequency)) +
-  geom_bar(position = 'dodge', stat = 'identity', alpha = 0.7) +
+  geom_bar(position = 'dodge', stat = 'identity', alpha = 0.7, color = 'grey', size = 0.3) +
   facet_wrap(~ police_force, ncol = 1, scales = 'free') +
   theme_minimal() +
   scale_fill_manual(values = c('skyblue1', 'blue', 'deepskyblue', 'dodgerblue'), labels = c('Likes', 'Quotes', 'Replies', 'Retweets'))+
