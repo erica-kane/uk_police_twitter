@@ -1,7 +1,5 @@
 # uk_police_twitter
 
-## Introuction
-
 This repository contains the code used for data extraction, cleaning, classification, analysis, and plotting. The data files are also contained in the repository.
 
 ## Files and data 
