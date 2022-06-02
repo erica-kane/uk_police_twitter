@@ -9,8 +9,8 @@ This repository contains the code used for data extraction, cleaning, classifica
 Files are run in a linear manner as outlined below:
 
 - [collection.R](collection.R) - this R script extracts the data through Twitter's API and produces
-    - [tweets.rds](tweets.rds)
-    - [tweets.csv](tweets.csv)
+    - [tweets.rds](tweets.rds) - extracted data as rds file
+    - [tweets.csv](tweets.csv) - extracted data as csv file
 - [clean.py](clean.py) - this Python script deals with URLs and emojis, adding tweet_type and tweet_form. It produces
     - [plot_tweets.csv](plot_tweets.csv) - this data file contains all tweets with extra variables (tweet type)
     - [total_tweet_plot.R](total_tweet_plot.R)- this R script uses plot_tweets.csv to look at tweet counts per force and type
