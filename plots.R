@@ -62,14 +62,15 @@ plot_tweets %>%
   group_by(week, police_force, tweet_class) %>%
   summarise(Count = n()) %>%
   ggplot(aes(x = week, y = Count, color = tweet_class)) +
-  scale_color_manual(values=c("lightskyblue1", 'blue4',"dodgerblue1")) +
-  geom_line(size = 0.3) + 
+  scale_color_manual(values=c("#9ECAE1", '#4292C6',"#08306B")) +
+  geom_line(size = 0.5) + 
   facet_wrap(~ police_force, ncol = 1) +
   labs(x = 'Date', y = 'Tweet count (aggregated by week)', color = 'Tweet class') +
   theme_minimal() +
   geom_vline(xintercept=as.numeric(as.Date('2020-05-25')), color = 'gray41', alpha = 0.8, size = 0.2, linetype = 'dashed') +
   geom_vline(xintercept=as.numeric(as.Date('2021-03-04')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') +
-  geom_vline(xintercept=as.numeric(as.Date('2020-03-20')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed')
+  geom_vline(xintercept=as.numeric(as.Date('2020-03-20')), alpha = 0.8, size = 0.2, color = 'gray41', linetype = 'dashed') +
+  theme(axis.text=element_text(size=15), strip.text = element_text(size=18),axis.title = element_text(size = 20), legend.text=element_text(size=16), legend.title=element_text(size=18))
   
 # Line graph per month
 plot_tweets %>%
@@ -124,12 +125,12 @@ plot_tweets %>%
   slice_max(tf_idf, n=10, with_ties=FALSE) %>%
   ggplot(aes(x = reorder(token_tweet_list, n), y = n, fill = police_force)) +
   facet_wrap(~police_force + tweet_class, scales="free") +
-  scale_fill_manual(values = c('cadetblue3', 'blue', 'deepskyblue', 'dodgerblue', 'dodgerblue4')) +
-  geom_col(colour='black', size = 0.3, alpha = 0.5) +
+  scale_fill_manual(values = c('#DEEBF7', '#9ECAE1', '#4292C6', '#2171B5', '#08306B')) +
+  geom_col(colour='black', size = 0.3, alpha = 0.8) +
   xlab(NULL) +
   coord_flip() + 
   theme_minimal() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none", axis.text=element_text(size=20), strip.text = element_text(size=25),axis.title = element_text(size = 25)) +
   labs(x = 'Words with highest TF-IDF', y = 'Word frequency') 
 
 # Replies per force (class of replies)
@@ -227,8 +228,10 @@ plot_tweets %>%
   geom_bar(position = 'dodge', stat = 'identity', alpha = 0.7, color = 'grey', size = 0.3) +
   facet_wrap(~ police_force, ncol = 1, scales = 'free') +
   theme_minimal() +
-  scale_fill_manual(values = c('skyblue1', 'blue', 'deepskyblue', 'dodgerblue'), labels = c('Likes', 'Quotes', 'Replies', 'Retweets'))+
-  labs(x = 'Police force', y = 'Frequency of metric', fill = 'Tweet metric')
+  scale_fill_manual(values = c('#C6DBEF', '#6BAED6', '#2171B5', '#08306B'), labels = c('Likes', 'Quotes', 'Replies', 'Retweets'))+
+  labs(x = 'Police force', y = 'Frequency of metric', fill = 'Tweet metric') +
+  theme(axis.text=element_text(size=10), strip.text = element_text(size=13),axis.title = element_text(size = 15), legend.text=element_text(size=11), legend.title=element_text(size=13))
+
 
 
 # Confusion matrix - Logit
@@ -240,10 +243,10 @@ test_labels_logit %>%
   count(tweet_class, pred_class) %>%
   ggplot(aes(factor(tweet_class), factor(pred_class), fill = n)) +
   geom_tile(color = "white", lwd = 0.2, linetype = 1) +
-  scale_fill_gradient(low = "skyblue1", high = "blue4") +
-  geom_text(aes(label = n), colour = "white") +
+  scale_fill_gradient(low = "#9ECAE1", high = "#08306B") +
+  geom_text(aes(label = n), colour = "white", size = 5) +
   theme_minimal()+
-  theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5)) +
+  theme(legend.position = "none", axis.text.y = element_text(angle = 90, hjust = 0.5), axis.text=element_text(size=12), axis.title = element_text(size = 15)) +
   labs(x = '\nTweet class', y = 'Predicted class\n') + 
   scale_x_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) +
   scale_y_discrete(labels=c('1' = "Providing information", "2" = "Engagement", "3" = "Intelligence gathering")) 
